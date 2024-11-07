@@ -22,7 +22,7 @@ namespace harkka.Controllers
             _userService = service;
         }
         [HttpGet]
-        [Authorize]
+        
 
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetUsers()
         {
@@ -30,6 +30,7 @@ namespace harkka.Controllers
         }
 
         [HttpGet("{username}")]
+        [Authorize]
 
         public async Task<ActionResult<UserDTO>> GetUser(string username)
         {
@@ -69,6 +70,7 @@ namespace harkka.Controllers
             return CreatedAtAction("GetUser", new { username = user.username }, user);
         }
         [HttpDelete("{username}")]
+        [Authorize]
 
 
         public async Task<IActionResult> DeleteUser(string username)
@@ -80,9 +82,5 @@ namespace harkka.Controllers
 
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
     }
 }
