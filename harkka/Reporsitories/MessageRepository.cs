@@ -1,16 +1,16 @@
 ﻿using harkka.models;
+using harkka.Reporsitories;
 using Microsoft.EntityFrameworkCore;
 
-namespace harkka.Reporsitories
+namespace BackEndHarjoitusTyo.Repositories
 {
     public class MessageRepository : IMessageRepository
     {
         private readonly MessageServiceContext _context;
-        public MessageRepository(MessageServiceContext context) 
-        { 
-            _context = context; 
+        public MessageRepository(MessageServiceContext context)
+        {
+            _context = context;
         }
-
         public async Task<bool> DeleteMessageAsync(Message message)
         {
             if (message == null)
@@ -30,20 +30,37 @@ namespace harkka.Reporsitories
             return await _context.Messages.FindAsync(id);
         }
 
-        //get public messages
+        //Get public messages
         public async Task<IEnumerable<Message>> GetMessagesAsync()
         {
-            return await _context.Messages.Include(s=>s.sender).Where(x => x.recipent==null).OrderByDescending(x => x.id).Take(10).ToListAsync();
+            return await _context.Messages
+                .Include(s => s.sender)
+                .Where(x => x.recipent == null)
+                .OrderByDescending(x => x.id)
+                .Take(10)
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<Message>> GetMyReceivedMessagesAsync(User usr)
+        public async Task<IEnumerable<Message>> GetMyReceivedMessagesAsync(User user)
         {
-            return await _context.Messages.Include(s => s.sender).Where(x => x.recipent == usr).OrderByDescending(x => x.id).Take(10).ToListAsync();
+            return await _context.Messages
+               .Include(s => s.sender)
+               .Include(s => s.recipent)
+               .Where(x => x.recipent == user)
+               .OrderByDescending(x => x.id)
+               .Take(10)
+               .ToListAsync();
         }
 
-        public async Task<IEnumerable<Message>> GetMySentMessagesAsync(User usr)
+        public async Task<IEnumerable<Message>> GetMySentMessagesAsync(User user)
         {
-            return await _context.Messages.Include(s => s.recipent).Where(x => x.sender == usr).OrderByDescending(x=> x.id).Take(10).ToListAsync();
+            return await _context.Messages
+               .Include(s => s.sender)
+               .Include(s => s.recipent)
+               .Where(x => x.sender == user)
+               .OrderByDescending(x => x.id)
+               .Take(10)
+               .ToListAsync();
         }
 
         public async Task<Message> NewMessageAsync(Message message)
